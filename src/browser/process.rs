@@ -324,7 +324,7 @@ impl Process {
             command.envs(process_envs);
         }
 
-        let mut args = vec![
+        /*let mut args = vec![
             "--allow-pre-commit-input",
             "--disable-background-networking",
             "--disable-client-side-phishing-detection",
@@ -347,7 +347,7 @@ impl Process {
             "--use-mock-keychain",
             "--user-data-dir=/tmp/.com.google.Chrome.u0z2A1",
             "--window-size=1024,768",
-        ];
+        ];*/
 
         info!("Chrome args: {:?}", &args);
 
@@ -373,7 +373,7 @@ impl Process {
             let chrome_output = line?;
             trace!("Chrome output: {}", chrome_output);
 
-            if port_taken_re.is_match(&chrome_output) || !chrome_output.contains("NETLINK socket") {
+            if port_taken_re.is_match(&chrome_output) && !chrome_output.contains("NETLINK socket") {
                 trace!("port_taken_re matches: {:?}", chrome_output);
                 return Err(ChromeLaunchError::DebugPortInUse {}.into());
             }
