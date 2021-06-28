@@ -373,7 +373,8 @@ impl Process {
             let chrome_output = line?;
             trace!("Chrome output: {}", chrome_output);
 
-            if port_taken_re.is_match(&chrome_output) {
+            if port_taken_re.is_match(&chrome_output) || !chrome_output.contains("NETLINK socket") {
+                trace!("port_taken_re matches: {:?}", chrome_output);
                 return Err(ChromeLaunchError::DebugPortInUse {}.into());
             }
 
