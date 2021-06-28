@@ -324,6 +324,8 @@ impl Process {
             command.envs(process_envs);
         }
 
+        info!("Chrome args: {:?}", &args);
+
         let process = TemporaryProcess(command.args(&args).stderr(Stdio::piped()).spawn()?);
         Ok(process)
     }
