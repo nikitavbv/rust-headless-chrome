@@ -324,33 +324,6 @@ impl Process {
             command.envs(process_envs);
         }
 
-        /*let mut args = vec![
-            "--allow-pre-commit-input",
-            "--disable-background-networking",
-            "--disable-client-side-phishing-detection",
-            "--disable-default-apps",
-            "--disable-gpu",
-            "--disable-hang-monitor",
-            "--disable-popup-blocking",
-            "--disable-prompt-on-repost",
-            "--disable-sync--enable-automation",
-            "--enable-blink-features=ShadowDOMV0",
-            "--enable-logging",
-            "--headless",
-            "--log-level=0",
-            "--no-first-run",
-            "--no-sandbox",
-            "--no-service-autorun",
-            "--password-store=basic",
-            "--remote-debugging-port=0",
-            "--test-type=webdriver",
-            "--use-mock-keychain",
-            "--user-data-dir=/tmp/.com.google.Chrome.u0z2A1",
-            "--window-size=1024,768",
-        ];*/
-
-        info!("Chrome args: {:?}", &args);
-
         let process = TemporaryProcess(command.args(&args).stderr(Stdio::piped()).spawn()?);
         Ok(process)
     }
@@ -359,7 +332,7 @@ impl Process {
     where
         R: Read,
     {
-        let port_taken_re = Regex::new(r"ERROR.*bind").unwrap();
+        let port_taken_re = Regex::new(r"ERROR.*bind\(\) failed").unwrap();
 
         let re = Regex::new(r"listening on (.*/devtools/browser/.*)$").unwrap();
 
@@ -373,7 +346,7 @@ impl Process {
             let chrome_output = line?;
             trace!("Chrome output: {}", chrome_output);
 
-            if port_taken_re.is_match(&chrome_output) && !chrome_output.contains("NETLINK socket") {
+            if port_taken_re.is_match(&chrome_output) {
                 trace!("port_taken_re matches: {:?}", chrome_output);
                 return Err(ChromeLaunchError::DebugPortInUse {}.into());
             }
